@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_hashmap" default="compile.module.hashmap">
+  <dirname property="module.hashmap.basedir" file="${ant.file.module_hashmap}"/>
+  
+  <property name="module.jdk.home.hashmap" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.hashmap" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.hashmap" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.hashmap" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="hashmap.output.dir" value="${module.hashmap.basedir}/out/production/HashMap"/>
+  <property name="hashmap.testoutput.dir" value="${module.hashmap.basedir}/out/test/HashMap"/>
+  
+  <path id="hashmap.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="hashmap.module.production.classpath">
+    <path refid="${module.jdk.classpath.hashmap}"/>
+  </path>
+  
+  <path id="hashmap.runtime.production.module.classpath">
+    <pathelement location="${hashmap.output.dir}"/>
+  </path>
+  
+  <path id="hashmap.module.classpath">
+    <path refid="${module.jdk.classpath.hashmap}"/>
+    <pathelement location="${hashmap.output.dir}"/>
+  </path>
+  
+  <path id="hashmap.runtime.module.classpath">
+    <pathelement location="${hashmap.testoutput.dir}"/>
+    <pathelement location="${hashmap.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.hashmap">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.hashmap">
+    <patternset refid="excluded.from.module.hashmap"/>
+  </patternset>
+  
+  <path id="hashmap.module.sourcepath">
+    <dirset dir="${module.hashmap.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.hashmap" depends="compile.module.hashmap.production,compile.module.hashmap.tests" description="Compile module HashMap"/>
+  
+  <target name="compile.module.hashmap.production" depends="register.custom.compilers" description="Compile module HashMap; production classes">
+    <mkdir dir="${hashmap.output.dir}"/>
+    <javac2 destdir="${hashmap.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.hashmap}/javac">
+      <compilerarg line="${compiler.args.hashmap}"/>
+      <bootclasspath refid="hashmap.module.bootclasspath"/>
+      <classpath refid="hashmap.module.production.classpath"/>
+      <src refid="hashmap.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.hashmap"/>
+    </javac2>
+    
+    <copy todir="${hashmap.output.dir}">
+      <fileset dir="${module.hashmap.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.hashmap.tests" depends="register.custom.compilers,compile.module.hashmap.production" description="compile module HashMap; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.hashmap" description="cleanup module">
+    <delete dir="${hashmap.output.dir}"/>
+    <delete dir="${hashmap.testoutput.dir}"/>
+  </target>
+</project>
